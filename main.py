@@ -16,23 +16,22 @@ class JobData(BaseModel):
     moneyPerSec: str
     petName: str
 
-current_job = {
-    "jobIdMobile": "",
-    "moneyPerSec": "",
-    "petName": ""
-}
+# Lista de jobs recebidos
+jobs = []
 
 @app.post("/job")
-async def update_job(data: JobData):
-    global current_job
-    current_job = {
+async def add_job(data: JobData):
+    jobs.insert(0, {
         "jobIdMobile": data.jobIdMobile,
         "moneyPerSec": data.moneyPerSec,
         "petName": data.petName
-    }
-    print(f"[UPDATE] Dados recebidos: {current_job}")
-    return {"message": "Dados atualizados"}
+    })
+    # Limite opcional: só guarda os 30 mais recentes
+    if len(jobs) > 30:
+        jobs.pop()
+    print(f"[UPDATE] Dados recebidos: {data}")
+    return {"message": "Job adicionado"}
 
 @app.get("/job")
-async def get_job():
-    return current_job
+async def get_jobs():
+    return jobs
