@@ -13,16 +13,26 @@ app.add_middleware(
 
 class JobData(BaseModel):
     jobIdMobile: str
+    moneyPerSec: str
+    petName: str
 
-current_job = ""
+current_job = {
+    "jobIdMobile": "",
+    "moneyPerSec": "",
+    "petName": ""
+}
 
 @app.post("/job")
 async def update_job(data: JobData):
     global current_job
-    current_job = data.jobIdMobile
-    print(f"[UPDATE] jobIdMobile atualizado: {current_job}")
-    return {"message": "JobIdMobile atualizado"}
+    current_job = {
+        "jobIdMobile": data.jobIdMobile,
+        "moneyPerSec": data.moneyPerSec,
+        "petName": data.petName
+    }
+    print(f"[UPDATE] Dados recebidos: {current_job}")
+    return {"message": "Dados atualizados"}
 
 @app.get("/job")
 async def get_job():
-    return {"jobIdMobile": current_job}
+    return current_job
