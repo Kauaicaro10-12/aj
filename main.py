@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -16,7 +16,7 @@ class JobData(BaseModel):
     moneyPerSec: str
     petName: str
 
-# Lista de jobs recebidos
+# Lista de jobs recebidos (mais recente no topo)
 jobs = []
 
 @app.post("/job")
@@ -35,14 +35,3 @@ async def add_job(data: JobData):
 @app.get("/job")
 async def get_jobs():
     return jobs
-
-# NOVO: Endpoint para descartar/remover jobId da lista
-@app.post("/job/discard")
-async def discard_job(data: dict = Body(...)):
-    job_id = data.get("jobId")
-    global jobs
-    before = len(jobs)
-    jobs = [job for job in jobs if job.get("jobIdMobile") != job_id]
-    after = len(jobs)
-    print(f"[DISCARD] Removido? {before-after>0} | jobId: {job_id}")
-    return {"ok": True, "removed": job_id}
